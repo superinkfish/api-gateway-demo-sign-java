@@ -19,17 +19,6 @@
       <version>1.10</version>
     </dependency>
     <dependency>
-      <groupId>commons-io</groupId>
-      <artifactId>commons-io</artifactId>
-      <version>2.4</version>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>com.google.guava</groupId>
-      <artifactId>guava</artifactId>
-      <version>19.0</version>
-    </dependency>
-    <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
       <version>4.12</version>
@@ -91,19 +80,9 @@
         <artifactId>maven-javadoc-plugin</artifactId>
         <version>2.10.4</version>
         <configuration>
-          <archive>
-            <manifest>
-              <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
-              <addDefaultSpecificationEntries>true</addDefaultSpecificationEntries>
-            </manifest>
-          </archive>
-          <aggregate>true</aggregate>
           <charset>UTF-8</charset>
           <docEncoding>UTF-8</docEncoding>
           <encoding>UTF-8</encoding>
-          <failOnError>false</failOnError>
-          <!-- keep only errors and warnings -->
-          <quiet>true</quiet>
           <source>1.7</source>
         </configuration>
       </plugin>

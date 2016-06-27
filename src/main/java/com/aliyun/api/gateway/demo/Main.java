@@ -1,21 +1,3 @@
-/*
- * Licensed to the Apache Software Foundation (ASF) under one
- * or more contributor license agreements.  See the NOTICE file
- * distributed with this work for additional information
- * regarding copyright ownership.  The ASF licenses this file
- * to you under the Apache License, Version 2.0 (the
- * "License"); you may not use this file except in compliance
- * with the License.  You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing,
- * software distributed under the License is distributed on an
- * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- * KIND, either express or implied.  See the License for the
- * specific language governing permissions and limitations
- * under the License.
- */
 package com.aliyun.api.gateway.demo;
 
 import java.io.IOException;
@@ -26,9 +8,6 @@ import java.util.Map;
 import org.apache.http.Header;
 import org.apache.http.HttpResponse;
 import org.apache.http.util.EntityUtils;
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
-import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -44,42 +23,48 @@ import com.aliyun.api.gateway.demo.util.MessageDigestUtil;
  * <li>修改APP_KEY、APP_SECRET、TEST_ENV、CUSTOM_HEADERS_TO_SIGN_PREFIX等参数为合理的值；
  * <li>针对自己在API网关中已经配置的接口， 修改相应的方法，对于不需要用到的方法可以删除或者注释掉。
  * </ul>
- * 在具体单元测试中，请参考本类的方法，自行撰写测试用例，本类用于示例，非用于对SDK的单元测试。
+ * 在生产使用中，本类不需要用到，只需要依照本类中的用法调用{@link Client}即可。
+ * 
+ * @author qiming.wqm 2016/06/27
  */
-public class Demo {
+public class Main {
     private final static Logger log = LoggerFactory.getLogger(Main.class);
     /** APP Key，请替换成真实的APP Key */
     private final static String APP_KEY = "app_key";
+
     /** APP密钥，请替换成真实的APP密钥 */
     private final static String APP_SECRET = "app_secret";
+
     /** 是否是测试环境 */
     private final static boolean TEST_ENV = true;
+
     /** 自定义参与签名Header前缀（可选,默认只有"X-Ca-"开头的参与到Header签名），一般不需要修改或设置成空字符串 */
     private final static String[] CUSTOM_HEADERS_TO_SIGN_PREFIX = new String[] { "Custom" };
-    /** HTTP访问客户端 */
-    private static Client client = null;
 
-    @BeforeClass
-    public static void setUpBeforeClass() {
-        try {
-            client = new Client(APP_KEY, APP_SECRET, TEST_ENV);
+    public static void main(String[] args) {
+        try (Client client = new Client(APP_KEY, APP_SECRET, TEST_ENV)) {
+            //请选择合适的方法留下，其余方法删除
+            get(client);
+            postForm(client);
+            postString(client);
+            postBytes(client);
+            putForm(client);
+            putString(client);
+            putBytesBody(client);
         } catch (Exception e) {
             log.error(e.getMessage(), e);
         }
     }
 
-    @AfterClass
-    public static void tearDownAfterClass() {
-        client.close();
-    }
-
     /**
      * HTTP GET
      *
-     * @throws Exception
+     * @param client
+     *            Client，提供HTTP访问服务
+     * @throws IOException
+     *             IO/网络出错
      */
-    @Test
-    public void get() throws Exception {
+    public static void get(Client client) throws IOException {
         //请求URL
         URL url = new URL("http://host:port/demo/get?qk1=qv2&qkn=qvn");
 
@@ -98,10 +83,12 @@ public class Demo {
     /**
      * HTTP POST 表单
      *
-     * @throws Exception
+     * @param client
+     *            Client，提供HTTP访问服务
+     * @throws IOException
+     *             IO/网络出错
      */
-    @Test
-    public void postForm() throws Exception {
+    public static void postForm(Client client) throws IOException {
         //请求URL
         URL url = new URL("http://host:port/demo/post/form");
 
@@ -123,10 +110,12 @@ public class Demo {
     /**
      * HTTP POST 字符串
      *
-     * @throws Exception
+     * @param client
+     *            Client，提供HTTP访问服务
+     * @throws IOException
+     *             IO/网络出错
      */
-    @Test
-    public void postString() throws Exception {
+    public static void postString(Client client) throws IOException {
         //请求URL
         URL url = new URL("http://host:port/demo/post/string");
         //Body内容
@@ -151,10 +140,12 @@ public class Demo {
     /**
      * HTTP POST 字节数组
      *
-     * @throws Exception
+     * @param client
+     *            Client，提供HTTP访问服务
+     * @throws IOException
+     *             IO/网络出错
      */
-    @Test
-    public void postBytes() throws Exception {
+    public static void postBytes(Client client) throws IOException {
         //请求URL
         URL url = new URL("http://host:port/demo/post/bytes");
         //Body内容
@@ -179,10 +170,12 @@ public class Demo {
     /**
      * HTTP PUT 表单
      *
-     * @throws Exception
+     * @param client
+     *            Client，提供HTTP访问服务
+     * @throws IOException
+     *             IO/网络出错
      */
-    @Test
-    public void putForm() throws Exception {
+    public static void putForm(Client client) throws IOException {
         //请求URL
         URL url = new URL("http://host:port/demo/put/form");
 
@@ -204,10 +197,12 @@ public class Demo {
     /**
      * HTTP PUT 字符串
      *
-     * @throws Exception
+     * @param client
+     *            Client，提供HTTP访问服务
+     * @throws IOException
+     *             IO/网络出错
      */
-    @Test
-    public void putString() throws Exception {
+    public static void putString(Client client) throws IOException {
         //请求URL
         URL url = new URL("http://host:port/demo/put/string");
         //Body内容
@@ -232,10 +227,12 @@ public class Demo {
     /**
      * HTTP PUT 字节数组
      *
-     * @throws Exception
+     * @param client
+     *            Client，提供HTTP访问服务
+     * @throws IOException
+     *             IO/网络出错
      */
-    @Test
-    public void putBytesBody() throws Exception {
+    public static void putBytesBody(Client client) throws IOException {
         //请求URL
         URL url = new URL("http://host:port/demo/put/bytes");
         //Body内容
@@ -259,11 +256,13 @@ public class Demo {
 
     /**
      * HTTP DELETE
-     *
-     * @throws Exception
+     * 
+     * @param client
+     *            Client，提供HTTP访问服务
+     * @throws IOException
+     *             IO/网络出错
      */
-    @Test
-    public void delete() throws Exception {
+    public static void delete(Client client) throws IOException {
         //请求URL
         URL url = new URL("http://host:port/demo/delete");
 
@@ -282,9 +281,11 @@ public class Demo {
      * 打印Response
      *
      * @param response
+     *            HTTP响应信息包装类
      * @throws IOException
+     *             IO/网络出错
      */
-    private void print(HttpResponse response) throws IOException {
+    private static void print(HttpResponse response) throws IOException {
         StringBuilder sb = new StringBuilder();
         sb.append("Status line: ").append(response.getStatusLine().getStatusCode()).append(Constants.LF);
         for (Header header : response.getAllHeaders()) {
@@ -293,4 +294,5 @@ public class Demo {
         sb.append(EntityUtils.toString(response.getEntity(), Constants.ENCODING)).append(Constants.LF);
         System.out.println(sb.toString());
     }
+
 }

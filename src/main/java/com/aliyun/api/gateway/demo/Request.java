@@ -75,7 +75,7 @@ public class Request {
     }
 
     public Request(Method method, URL url) {
-        this(method, url, 0, null, null);
+        this(method, url, Constants.DEFAULT_TIMEOUT, null, null);
     }
 
     public Request(Method method, URL url, int timeout) {
