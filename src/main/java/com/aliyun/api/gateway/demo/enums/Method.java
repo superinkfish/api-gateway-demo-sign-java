@@ -18,10 +18,69 @@
  */
 package com.aliyun.api.gateway.demo.enums;
 
+import org.apache.http.client.methods.RequestBuilder;
+
+import com.aliyun.api.gateway.demo.constant.ContentType;
+import com.aliyun.api.gateway.demo.constant.HttpHeader;
+
 /**
  * Http请求方法
- * Created by lipengfei on 16/3/17.
+ * 
+ * @author lipengfei 2016/03/17
+ * @author qiming.wqm 2016/06/24
  */
 public enum Method {
-    GET, POST_FORM, POST_STRING, POST_BYTES, PUT_FORM, PUT_STRING, PUT_BYTES, DELETE;
+    GET {
+        @Override
+        public RequestBuilder requestbuilder() {
+            return RequestBuilder.get();
+        }
+    },
+    POST_FORM {
+        @Override
+        public RequestBuilder requestbuilder() {
+            return RequestBuilder.post().addHeader(HttpHeader.HTTP_HEADER_CONTENT_TYPE, ContentType.CONTENT_TYPE_FORM);
+        }
+    },
+    POST_STRING {
+        @Override
+        public RequestBuilder requestbuilder() {
+            return RequestBuilder.post();
+        }
+    },
+    POST_BYTES {
+        @Override
+        public RequestBuilder requestbuilder() {
+            return RequestBuilder.post();
+        }
+    },
+    PUT_FORM {
+        @Override
+        public RequestBuilder requestbuilder() {
+            return RequestBuilder.put();
+        }
+    },
+    PUT_STRING {
+        @Override
+        public RequestBuilder requestbuilder() {
+            return RequestBuilder.put();
+        }
+    },
+    PUT_BYTES {
+        @Override
+        public RequestBuilder requestbuilder() {
+            return RequestBuilder.put();
+        }
+    },
+    DELETE {
+        @Override
+        public RequestBuilder requestbuilder() {
+            return RequestBuilder.delete();
+        }
+    };
+
+    /**
+     * @return 该Method对应的{@link RequestBuilder}
+     */
+    public abstract RequestBuilder requestbuilder();
 }

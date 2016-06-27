@@ -18,43 +18,56 @@
  */
 package com.aliyun.api.gateway.demo;
 
+import java.io.IOException;
+import java.net.URL;
+import java.util.HashMap;
+import java.util.Map;
+
+import org.apache.http.Header;
+import org.apache.http.HttpResponse;
+import org.apache.http.util.EntityUtils;
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
+import org.junit.Ignore;
+import org.junit.Test;
+
 import com.aliyun.api.gateway.demo.constant.Constants;
 import com.aliyun.api.gateway.demo.constant.ContentType;
 import com.aliyun.api.gateway.demo.constant.HttpHeader;
-import com.aliyun.api.gateway.demo.constant.HttpSchema;
 import com.aliyun.api.gateway.demo.enums.Method;
 import com.aliyun.api.gateway.demo.util.MessageDigestUtil;
-import org.apache.http.Header;
-import org.apache.http.HttpResponse;
-import org.junit.Test;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.nio.ByteBuffer;
-import java.nio.channels.Channels;
-import java.nio.channels.ReadableByteChannel;
-import java.nio.channels.WritableByteChannel;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 /**
- * 调用示例
- * 请替换APP_KEY,APP_SECRET,HOST,CUSTOM_HEADERS_TO_SIGN_PREFIX为真实配置
+ * 调用示例 请替换APP_KEY,APP_SECRET,TEST_ENV,url,CUSTOM_HEADERS_TO_SIGN_PREFIX为真实配置
  */
 public class Demo {
-    //APP KEY
-    private final static String APP_KEY = "app_key";
-    // APP密钥
-    private final static String APP_SECRET = "app_secret";
-    //API域名
-    private final static String HOST = "api_host";
-    //自定义参与签名Header前缀（可选,默认只有"X-Ca-"开头的参与到Header签名）
-    private final static List<String> CUSTOM_HEADERS_TO_SIGN_PREFIX = new ArrayList<String>();
+    /** APP Key，请替换成真实的APP Key */
+    //private final static String APP_KEY = "app_key";
+    private final static String APP_KEY = "23386892";
+    /** APP密钥，请替换成真实的APP密钥 */
+    //private final static String APP_SECRET = "app_secret";
+    private final static String APP_SECRET = "f2110ee3d6c8acc4682609eb7b4ea642";
 
-    static {
-        CUSTOM_HEADERS_TO_SIGN_PREFIX.add("Custom");
+    /** 是否是测试环境 */
+    private final static boolean TEST_ENV = true;
+    /** 自定义参与签名Header前缀（可选,默认只有"X-Ca-"开头的参与到Header签名），一般不需要修改或设置成空字符串 */
+    private final static String[] CUSTOM_HEADERS_TO_SIGN_PREFIX = new String[] { "Custom" };
+    /** HTTP访问客户端 */
+    private static Client client = null;
+
+    @BeforeClass
+    public static void setUpBeforeClass() {
+        try {
+            client = new Client(APP_KEY, APP_SECRET, TEST_ENV);
+        } catch (Exception e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+    }
+
+    @AfterClass
+    public static void tearDownAfterClass() throws Exception {
+        client.close();
     }
 
     /**
@@ -63,22 +76,20 @@ public class Demo {
      * @throws Exception
      */
     @Test
+    @Ignore
     public void get() throws Exception {
         //请求URL
-        String url = "/demo/get?qk1=qv2&qkn=qvn";
+        URL url = new URL("http://host:port/demo/get?qk1=qv2&qkn=qvn");
 
         Map<String, String> headers = new HashMap<String, String>();
         //（可选）响应内容序列化格式,默认application/json,目前仅支持application/json
         headers.put(HttpHeader.HTTP_HEADER_ACCEPT, "application/json");
         headers.put("CustomHeader", "demo");
 
-        Request request = new Request(Method.GET, HttpSchema.HTTP + HOST + url, APP_KEY, APP_SECRET, Constants.DEFAULT_TIMEOUT);
-        request.setHeaders(headers);
-        request.setSignHeaderPrefixList(CUSTOM_HEADERS_TO_SIGN_PREFIX);
+        Request request = new Request(Method.GET, url, headers, CUSTOM_HEADERS_TO_SIGN_PREFIX);
 
         //调用服务端
-        HttpResponse response = Client.execute(request);
-
+        HttpResponse response = client.execute(request);
         print(response);
     }
 
@@ -88,9 +99,10 @@ public class Demo {
      * @throws Exception
      */
     @Test
+    @Ignore
     public void postForm() throws Exception {
         //请求URL
-        String url = "/demo/post/form";
+        URL url = new URL("http://host:port/demo/post/form");
 
         Map<String, String> bodyParam = new HashMap<String, String>();
         bodyParam.put("FormParamKey", "FormParamValue");
@@ -99,14 +111,11 @@ public class Demo {
         //（可选）响应内容序列化格式,默认application/json,目前仅支持application/json
         headers.put(HttpHeader.HTTP_HEADER_ACCEPT, "application/json");
 
-        Request request = new Request(Method.POST_FORM, HttpSchema.HTTP + HOST + url, APP_KEY, APP_SECRET, Constants.DEFAULT_TIMEOUT);
-        request.setHeaders(headers);
-        request.setSignHeaderPrefixList(CUSTOM_HEADERS_TO_SIGN_PREFIX);
+        Request request = new Request(Method.POST_FORM, url, headers, CUSTOM_HEADERS_TO_SIGN_PREFIX);
         request.setFormBody(bodyParam);
 
         //调用服务端
-        HttpResponse response = Client.execute(request);
-
+        HttpResponse response = client.execute(request);
         print(response);
     }
 
@@ -116,9 +125,10 @@ public class Demo {
      * @throws Exception
      */
     @Test
+    @Ignore
     public void postString() throws Exception {
         //请求URL
-        String url = "/demo/post/string";
+        URL url = new URL("http://host:port/demo/post/string");
         //Body内容
         String body = "demo string body content";
 
@@ -130,14 +140,11 @@ public class Demo {
         //（POST/PUT请求必选）请求Body内容格式
         headers.put(HttpHeader.HTTP_HEADER_CONTENT_TYPE, ContentType.CONTENT_TYPE_TEXT);
 
-        Request request = new Request(Method.POST_STRING, HttpSchema.HTTP + HOST + url, APP_KEY, APP_SECRET, Constants.DEFAULT_TIMEOUT);
-        request.setHeaders(headers);
-        request.setSignHeaderPrefixList(CUSTOM_HEADERS_TO_SIGN_PREFIX);
+        Request request = new Request(Method.POST_STRING, url, headers, CUSTOM_HEADERS_TO_SIGN_PREFIX);
         request.setStringBody(body);
 
         //调用服务端
-        HttpResponse response = Client.execute(request);
-
+        HttpResponse response = client.execute(request);
         print(response);
     }
 
@@ -147,9 +154,10 @@ public class Demo {
      * @throws Exception
      */
     @Test
+    @Ignore
     public void postBytes() throws Exception {
         //请求URL
-        String url = "/demo/post/bytes";
+        URL url = new URL("http://host:port/demo/post/bytes");
         //Body内容
         byte[] bytesBody = "demo bytes body content".getBytes(Constants.ENCODING);
 
@@ -161,14 +169,11 @@ public class Demo {
         //（POST/PUT请求必选）请求Body内容格式
         headers.put(HttpHeader.HTTP_HEADER_CONTENT_TYPE, ContentType.CONTENT_TYPE_TEXT);
 
-        Request request = new Request(Method.POST_BYTES, HttpSchema.HTTP + HOST + url, APP_KEY, APP_SECRET, Constants.DEFAULT_TIMEOUT);
-        request.setHeaders(headers);
-        request.setSignHeaderPrefixList(CUSTOM_HEADERS_TO_SIGN_PREFIX);
+        Request request = new Request(Method.POST_BYTES, url, headers, CUSTOM_HEADERS_TO_SIGN_PREFIX);
         request.setBytesBody(bytesBody);
 
         //调用服务端
-        HttpResponse response = Client.execute(request);
-
+        HttpResponse response = client.execute(request);
         print(response);
     }
 
@@ -178,9 +183,10 @@ public class Demo {
      * @throws Exception
      */
     @Test
+    @Ignore
     public void putForm() throws Exception {
         //请求URL
-        String url = "/demo/put/form";
+        URL url = new URL("http://host:port/demo/put/form");
 
         Map<String, String> bodyParam = new HashMap<String, String>();
         bodyParam.put("FormParamKey", "FormParamValue");
@@ -189,14 +195,11 @@ public class Demo {
         //（可选）响应内容序列化格式,默认application/json,目前仅支持application/json
         headers.put(HttpHeader.HTTP_HEADER_ACCEPT, "application/json");
 
-        Request request = new Request(Method.PUT_FORM, HttpSchema.HTTP + HOST + url, APP_KEY, APP_SECRET, Constants.DEFAULT_TIMEOUT);
-        request.setHeaders(headers);
-        request.setSignHeaderPrefixList(CUSTOM_HEADERS_TO_SIGN_PREFIX);
+        Request request = new Request(Method.PUT_FORM, url, headers, CUSTOM_HEADERS_TO_SIGN_PREFIX);
         request.setFormBody(bodyParam);
 
         //调用服务端
-        HttpResponse response = Client.execute(request);
-
+        HttpResponse response = client.execute(request);
         print(response);
     }
 
@@ -206,9 +209,10 @@ public class Demo {
      * @throws Exception
      */
     @Test
+    @Ignore
     public void putString() throws Exception {
         //请求URL
-        String url = "/demo/put/string";
+        URL url = new URL("http://host:port/demo/put/string");
         //Body内容
         String body = "demo string body content";
 
@@ -220,14 +224,11 @@ public class Demo {
         //（POST/PUT请求必选）请求Body内容格式
         headers.put(HttpHeader.HTTP_HEADER_CONTENT_TYPE, ContentType.CONTENT_TYPE_TEXT);
 
-        Request request = new Request(Method.PUT_STRING, HttpSchema.HTTP + HOST + url, APP_KEY, APP_SECRET, Constants.DEFAULT_TIMEOUT);
-        request.setHeaders(headers);
-        request.setSignHeaderPrefixList(CUSTOM_HEADERS_TO_SIGN_PREFIX);
+        Request request = new Request(Method.PUT_STRING, url, headers, CUSTOM_HEADERS_TO_SIGN_PREFIX);
         request.setStringBody(body);
 
         //调用服务端
-        HttpResponse response = Client.execute(request);
-
+        HttpResponse response = client.execute(request);
         print(response);
     }
 
@@ -237,9 +238,10 @@ public class Demo {
      * @throws Exception
      */
     @Test
+    @Ignore
     public void putBytesBody() throws Exception {
         //请求URL
-        String url = "/demo/put/bytes";
+        URL url = new URL("http://host:port/demo/put/bytes");
         //Body内容
         byte[] bytesBody = "demo bytes body content".getBytes(Constants.ENCODING);
 
@@ -251,15 +253,34 @@ public class Demo {
         //（POST/PUT请求必选）请求Body内容格式
         headers.put(HttpHeader.HTTP_HEADER_CONTENT_TYPE, ContentType.CONTENT_TYPE_TEXT);
 
-        Request request = new Request(Method.PUT_BYTES, HttpSchema.HTTP + HOST + url, APP_KEY, APP_SECRET, Constants.DEFAULT_TIMEOUT);
-        request.setHeaders(headers);
-        request.setSignHeaderPrefixList(CUSTOM_HEADERS_TO_SIGN_PREFIX);
+        Request request = new Request(Method.PUT_BYTES, url, headers, CUSTOM_HEADERS_TO_SIGN_PREFIX);
         request.setBytesBody(bytesBody);
 
         //调用服务端
-        HttpResponse response = Client.execute(request);
-
+        HttpResponse response = client.execute(request);
         print(response);
+    }
+
+    @Test
+    public void 机器翻译_1_1_翻译接口() throws Exception {
+        //请求URL
+        URL url = new URL("https://dm-11.data.aliyun.com/rest/160601/mt/translate.json");
+        Map<String, String> bodyParam = new HashMap<String, String>();
+        bodyParam.put("q", "welcome to you");
+        bodyParam.put("source", "auto");
+        bodyParam.put("target", "zh");
+        bodyParam.put("format", "text");
+        Map<String, String> headers = new HashMap<String, String>();
+        //（可选）响应内容序列化格式,默认application/json,目前仅支持application/json
+        headers.put(HttpHeader.HTTP_HEADER_ACCEPT, "application/json");
+        //headers.put(HttpHeader.HTTP_HEADER_CONTENT_TYPE, ContentType.CONTENT_TYPE_TEXT);
+        Request request = new Request(Method.POST_FORM, url, headers, CUSTOM_HEADERS_TO_SIGN_PREFIX);
+        request.setHeaders(headers);
+        request.setSignHeaderPrefixList(CUSTOM_HEADERS_TO_SIGN_PREFIX);
+        request.setFormBody(bodyParam);
+        //调用服务端
+        HttpResponse response = client.execute(request);
+        System.out.println("调用结果：" + EntityUtils.toString(response.getEntity()));
     }
 
     /**
@@ -268,21 +289,19 @@ public class Demo {
      * @throws Exception
      */
     @Test
+    @Ignore
     public void delete() throws Exception {
         //请求URL
-        String url = "/demo/delete";
+        URL url = new URL("http://host:port/demo/delete");
 
         Map<String, String> headers = new HashMap<String, String>();
         //（可选）响应内容序列化格式,默认application/json,目前仅支持application/json
         headers.put(HttpHeader.HTTP_HEADER_ACCEPT, "application/json");
 
-        Request request = new Request(Method.DELETE, HttpSchema.HTTP + HOST + url, APP_KEY, APP_SECRET, Constants.DEFAULT_TIMEOUT);
-        request.setHeaders(headers);
-        request.setSignHeaderPrefixList(CUSTOM_HEADERS_TO_SIGN_PREFIX);
+        Request request = new Request(Method.DELETE, url, headers, CUSTOM_HEADERS_TO_SIGN_PREFIX);
 
         //调用服务端
-        HttpResponse response = Client.execute(request);
-
+        HttpResponse response = client.execute(request);
         print(response);
     }
 
@@ -294,35 +313,11 @@ public class Demo {
      */
     private void print(HttpResponse response) throws IOException {
         StringBuilder sb = new StringBuilder();
-        sb.append(response.getStatusLine().getStatusCode()).append(Constants.LF);
+        sb.append("Status line: ").append(response.getStatusLine().getStatusCode()).append(Constants.LF);
         for (Header header : response.getAllHeaders()) {
             sb.append(header.toString()).append(Constants.LF);
         }
-        sb.append(readStreamAsStr(response.getEntity().getContent())).append(Constants.LF);
+        sb.append(EntityUtils.toString(response.getEntity(), Constants.ENCODING)).append(Constants.LF);
         System.out.println(sb.toString());
-    }
-
-    /**
-     * 将流转换为字符串
-     *
-     * @param is
-     * @return
-     * @throws IOException
-     */
-    public static String readStreamAsStr(InputStream is) throws IOException {
-        ByteArrayOutputStream bos = new ByteArrayOutputStream();
-        WritableByteChannel dest = Channels.newChannel(bos);
-        ReadableByteChannel src = Channels.newChannel(is);
-        ByteBuffer bb = ByteBuffer.allocate(4096);
-
-        while (src.read(bb) != -1) {
-            bb.flip();
-            dest.write(bb);
-            bb.clear();
-        }
-        src.close();
-        dest.close();
-
-        return new String(bos.toByteArray(), Constants.ENCODING);
     }
 }

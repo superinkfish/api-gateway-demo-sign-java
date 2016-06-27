@@ -18,65 +18,47 @@
  */
 package com.aliyun.api.gateway.demo.util;
 
-import java.io.UnsupportedEncodingException;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
+import org.apache.commons.codec.binary.Base64;
+import org.apache.commons.codec.digest.DigestUtils;
 
 import com.aliyun.api.gateway.demo.constant.Constants;
-import org.apache.commons.codec.binary.Base64;
 
 /**
- * 消息摘要工具
+ * 消息摘要工具<br>
+ * 本工具对字符串或字节数组进行加密，首先采用MD5算法进行编码，然后使用Base64再次进行编码，最终得到加密后的字符串。
+ * 
+ * @author qiming.wqm 2016/06/24
  */
 public class MessageDigestUtil {
     /**
      * 先进行MD5摘要再进行Base64编码获取摘要字符串
      *
-     * @param inStr
-     * @return
+     * @param str
+     *            需要加密的字符串，不能为null
+     * @return 加密后的字符串
+     * @throws IllegalArgumentException
+     *             如果参数str为null则抛出异常
      */
-    public static String base64AndMD5(String inStr) {
-        if (inStr == null) {
-            throw new IllegalArgumentException("inStr can not be null");
+    public static String base64AndMD5(String str) {
+        if (str == null) {
+            throw new IllegalArgumentException("Parameter str cannot be null");
         }
-        return base64AndMD5(toBytes(inStr));
+        return base64AndMD5(str.getBytes(Constants.ENCODING));
     }
 
     /**
      * 先进行MD5摘要再进行Base64编码获取摘要字符串
      *
-     * @return
+     * @param bytes
+     *            需要加密的字节数组，不能为null
+     * @return 加密后的字符串
+     * @throws IllegalArgumentException
+     *             如果参数bytes为null则抛出异常
      */
     public static String base64AndMD5(byte[] bytes) {
         if (bytes == null) {
-            throw new IllegalArgumentException("bytes can not be null");
+            throw new IllegalArgumentException("Parameter bytes cannot be null");
         }
-        try {
-            final MessageDigest md = MessageDigest.getInstance("MD5");
-            md.reset();
-            md.update(bytes);
-            final Base64 base64 = new Base64();
-            final byte[] enbytes = base64.encode(md.digest());
-            return new String(enbytes);
-        } catch (final NoSuchAlgorithmException e) {
-            throw new IllegalArgumentException("unknown algorithm MD5");
-        }
-    }
-
-    /**
-     * String转换为字节数组
-     *
-     * @param str
-     * @return
-     */
-    private static byte[] toBytes(final String str) {
-        if (str == null) {
-            return null;
-        }
-        try {
-            return str.getBytes(Constants.ENCODING);
-        } catch (final UnsupportedEncodingException e) {
-            throw new RuntimeException(e.getMessage(), e);
-        }
+        return Base64.encodeBase64String(DigestUtils.md5(bytes));
     }
 }

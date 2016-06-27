@@ -18,20 +18,21 @@
  */
 package com.aliyun.api.gateway.demo.constant;
 
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
+
 /**
  * 通用常量
  */
 public class Constants {
-    //签名算法HmacSha256
-    public static final String HMAC_SHA256 = "HmacSHA256";
-    //编码UTF-8
-    public static final String ENCODING = "UTF-8";
-    //UserAgent
+    /** 默认字符集编码UTF-8 */
+    public static final Charset ENCODING = StandardCharsets.UTF_8;
+    /** HTTP请求中的user-agent */
     public static final String USER_AGENT = "demo/aliyun/java";
-    //换行符
+    /** 换行符 */
     public static final String LF = "\n";
-    //默认请求超时时间,单位毫秒
+    /** 默认请求超时时间,单位毫秒 */
     public static final int DEFAULT_TIMEOUT = 1000;
-    //参与签名的系统Header前缀,只有指定前缀的Header才会参与到签名中
+    /** 参与签名的系统Header前缀,只有指定前缀的Header才会参与到签名中 */
     public static final String CA_HEADER_TO_SIGN_PREFIX_SYSTEM = "X-Ca-";
 }
