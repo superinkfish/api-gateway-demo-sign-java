@@ -110,7 +110,7 @@ public class Client implements AutoCloseable {
 
     /** 关闭HttpClient */
     @Override
-    public void close() throws Exception {
+    public void close() {
         if (httpClient != null) {
             try {
                 httpClient.close();

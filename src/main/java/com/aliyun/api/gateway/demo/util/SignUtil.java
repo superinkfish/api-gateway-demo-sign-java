@@ -63,7 +63,7 @@ public class SignUtil {
     public static String sign(RequestBuilder requestBuilder, String url, Map<String, String> formParamMap,
             String secret, String[] signHeaderPrefixes) {
         String sign = buildStringToSign(requestBuilder, url, formParamMap, signHeaderPrefixes);
-        System.out.println(sign);
+        //System.out.println(sign);
         return new String(Base64.encodeBase64(HmacUtils.hmacSha256(secret, sign)), Constants.ENCODING);
     }
 

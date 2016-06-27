@@ -42,11 +42,9 @@ import com.aliyun.api.gateway.demo.util.MessageDigestUtil;
  */
 public class Demo {
     /** APP Key，请替换成真实的APP Key */
-    //private final static String APP_KEY = "app_key";
-    private final static String APP_KEY = "23386892";
+    private final static String APP_KEY = "app_key";
     /** APP密钥，请替换成真实的APP密钥 */
-    //private final static String APP_SECRET = "app_secret";
-    private final static String APP_SECRET = "f2110ee3d6c8acc4682609eb7b4ea642";
+    private final static String APP_SECRET = "app_secret";
 
     /** 是否是测试环境 */
     private final static boolean TEST_ENV = true;
@@ -66,7 +64,7 @@ public class Demo {
     }
 
     @AfterClass
-    public static void tearDownAfterClass() throws Exception {
+    public static void tearDownAfterClass() {
         client.close();
     }
 
@@ -259,28 +257,6 @@ public class Demo {
         //调用服务端
         HttpResponse response = client.execute(request);
         print(response);
-    }
-
-    @Test
-    public void 机器翻译_1_1_翻译接口() throws Exception {
-        //请求URL
-        URL url = new URL("https://dm-11.data.aliyun.com/rest/160601/mt/translate.json");
-        Map<String, String> bodyParam = new HashMap<String, String>();
-        bodyParam.put("q", "welcome to you");
-        bodyParam.put("source", "auto");
-        bodyParam.put("target", "zh");
-        bodyParam.put("format", "text");
-        Map<String, String> headers = new HashMap<String, String>();
-        //（可选）响应内容序列化格式,默认application/json,目前仅支持application/json
-        headers.put(HttpHeader.HTTP_HEADER_ACCEPT, "application/json");
-        //headers.put(HttpHeader.HTTP_HEADER_CONTENT_TYPE, ContentType.CONTENT_TYPE_TEXT);
-        Request request = new Request(Method.POST_FORM, url, headers, CUSTOM_HEADERS_TO_SIGN_PREFIX);
-        request.setHeaders(headers);
-        request.setSignHeaderPrefixList(CUSTOM_HEADERS_TO_SIGN_PREFIX);
-        request.setFormBody(bodyParam);
-        //调用服务端
-        HttpResponse response = client.execute(request);
-        System.out.println("调用结果：" + EntityUtils.toString(response.getEntity()));
     }
 
     /**
