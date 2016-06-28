@@ -47,7 +47,7 @@ import com.aliyun.api.gateway.demo.util.MessageDigestUtil;
  * 在具体单元测试中，请参考本类的方法，自行撰写测试用例，本类用于示例，非用于对SDK的单元测试。
  */
 public class Demo {
-    private final static Logger log = LoggerFactory.getLogger(Main.class);
+    private final static Logger log = LoggerFactory.getLogger(Demo.class);
     /** APP Key，请替换成真实的APP Key */
     private final static String APP_KEY = "app_key";
     /** APP密钥，请替换成真实的APP密钥 */
